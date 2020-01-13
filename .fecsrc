@@ -1,0 +1,11 @@
+{
+    "files": ["./src/**/*.ts"],
+    "eslint": {
+        "rules": {
+            "fecs-esnext-ext": -1,
+            "fecs-valid-jsdoc": -1,
+            "fecs-prefer-spread-element": -1,
+            "object-curly-spacing": -1
+        }
+    }
+}
