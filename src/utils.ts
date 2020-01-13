@@ -5,13 +5,12 @@
  */
 
 import {resolve} from 'path';
-import {promisify} from 'util';
 import * as fs from 'fs';
 const {readFileSync, existsSync, mkdirSync} = fs;
 
 export {existsSync, readFileSync};
 
-export const genDistPath = async (path: string): Promise<string> => {
+export const genDistPath = async (path: string = 'dist'): Promise<string> => {
     let target = path;
     if (path[0] === '.') {
         target = resolve(process.cwd(), path);

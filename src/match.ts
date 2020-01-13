@@ -34,7 +34,7 @@ export default class Match {
             const reName = new RegExp(`id="${prefix}-(\\w+)"`);
             const ids: string[] | null = icon.match(reName);
             const name = (ids && ids[1] || '');
-            this.icons.push({name, icon});
+            // this.icons.push({name, icon});
         }
         return this;
     }

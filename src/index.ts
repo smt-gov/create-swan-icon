@@ -7,6 +7,7 @@
 import axios from 'axios';
 import Generate from './generate';
 import {Conf} from './interface';
+import {red} from 'chalk';
 
 /**
  * 创建组件
@@ -16,11 +17,10 @@ import {Conf} from './interface';
 export const create = async <Promise>(config: Conf) => {
     const {distDir, componentName, url, path} = config;
     try {
-        const data = await axios.get(url);
-        console.log('返回数据: ', data);
-        const gen = new Generate(data);
+        const res = await axios.get('https:' + url);
+        const gen = new Generate(res.data);
     }
     catch (err) {
-        throw err;
+        return console.log(red('发生了错误：' + err.message));
     }
 };

@@ -7,7 +7,8 @@
     "test": "echo \"Error: no test specified\" && exit 1",
     "lint": "tslint ./src",
     "dev": "tsc -w",
-    "build": "tsc"
+    "build": "tsc",
+    "start": "node dist/cli.js"
   },
   "keywords": [],
   "author": "",
@@ -33,5 +34,7 @@
       "tslint"
     ]
   },
-  "dependencies": {}
+  "dependencies": {
+    "@types/semver": "^6.2.0"
+  }
 }

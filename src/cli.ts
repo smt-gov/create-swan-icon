@@ -7,7 +7,7 @@
 
 import {red} from 'chalk';
 import {prompt} from 'inquirer';
-import semver from 'semver';
+import * as semver from 'semver';
 import {Conf, Msg} from './interface';
 import {genDistPath} from './utils';
 import {create} from './index';
@@ -15,7 +15,7 @@ import {create} from './index';
 const DEFAULT_CONFIG: Conf = {
     url: '',
     path: process.cwd(),
-    distDir: 'gov-icon',
+    distDir: './gov-icon',
     componentName: 'icon'
 };
 
@@ -40,34 +40,28 @@ const MSGS: Msg[] = [
  * @param ver 目标版本
  * @param baseline 基线，不低于
  */
-const checkVer = (ver: string = process.version, baseline: string = '9.x'): boolean => semver.satisfies(ver, baseline);
+const checkVer = (ver: string = process.version, baseline: string = '9.x'): boolean => !semver.satisfies(ver, baseline);
 
 /**
  * 交互 // icon-generate --from url --to dist
  *
  */
 const interactive = async () => {
-    const [arg1, arg2, arg3, arg4] = process.argv.slice(2);
-    if (!arg1.includes('--from')) {
-        throw new Error('必须包含from参数');
+    const arg1 = process.argv[2];
+
+    if (!arg1) {
+        throw new Error('第一个参数是图标来源, 格式 //xxxx.xxx/xx.js');
     }
 
-    if (!arg2) {
-        throw new Error('需要指定图标来源');
-    }
-
-    if (arg2.indexOf('//') !== 0) {
+    if (arg1.slice(0, 2) !== '//') {
         throw new Error('直接复制icon url即可, 格式 //xxxx.xxx/xx.js');
     }
 
-    if (!arg3.includes('--to')) {
-        throw new Error('必须包含to参数');
-    }
-
-    const path = await genDistPath(arg4);
     const {distDir} = await prompt(MSGS[0]);
+    const path = await genDistPath(distDir);
     const {componentName} = await prompt(MSGS[1]);
 
+    console.log('distDir, componentName, url, path', distDir, componentName, arg1, path);
     return {
 
         // 输出目录
@@ -77,7 +71,7 @@ const interactive = async () => {
         componentName,
 
         // 远程地址
-        url: arg2,
+        url: arg1,
 
         // 输出路径
         path
@@ -91,4 +85,5 @@ const main = async () => {
     const config: Conf = await interactive();
     create(config);
 };
+
 main();
