@@ -1,14 +1,13 @@
 /**
  * @file interface.ts
  * @author afcfzf (9301462@baidu.com)
- * @desc 形状定义
+ * @desc 接口
  */
 
 export interface Conf {
     url: string;
     path: string;
     distDir: string;
-    componentName: string;
 };
 
 export interface Msg {

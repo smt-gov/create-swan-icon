@@ -6,6 +6,7 @@
 
 import axios from 'axios';
 import Generate from './generate';
+import Match from './match';
 import {Conf} from './interface';
 import {red} from 'chalk';
 
@@ -14,11 +15,14 @@ import {red} from 'chalk';
  * @param {Object} config 配置
  * @return {void}
  */
-export const create = async <Promise>(config: Conf) => {
-    const {distDir, componentName, url, path} = config;
+export const create = async (config: Conf) => {
+    const {url, path} = config;
     try {
         const res = await axios.get('https:' + url);
-        const gen = new Generate(res.data);
+        const match = new Match();
+        const icons = match.getContent(res.data).getIcons();
+        const gen = new Generate(icons, path)
+        gen.generateComponent();
     }
     catch (err) {
         return console.log(red('发生了错误：' + err.message));

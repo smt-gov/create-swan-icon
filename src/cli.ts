@@ -5,9 +5,9 @@
  */
 
 
-import {red} from 'chalk';
+import {red, green} from 'chalk';
 import {prompt} from 'inquirer';
-import * as semver from 'semver';
+import * as semver from 'semver';;
 import {Conf, Msg} from './interface';
 import {genDistPath} from './utils';
 import {create} from './index';
@@ -15,8 +15,7 @@ import {create} from './index';
 const DEFAULT_CONFIG: Conf = {
     url: '',
     path: process.cwd(),
-    distDir: './gov-icon',
-    componentName: 'icon'
+    distDir: './gov-icon'
 };
 
 const MSGS: Msg[] = [
@@ -25,12 +24,6 @@ const MSGS: Msg[] = [
         name: 'distDir',
         message: '输出目录: ',
         default: DEFAULT_CONFIG.distDir
-    },
-    {
-        type: 'input',
-        name: 'componentName',
-        message: '输出的组件名',
-        default: DEFAULT_CONFIG.componentName
     }
 ];
 
@@ -59,16 +52,11 @@ const interactive = async () => {
 
     const {distDir} = await prompt(MSGS[0]);
     const path = await genDistPath(distDir);
-    const {componentName} = await prompt(MSGS[1]);
 
-    console.log('distDir, componentName, url, path', distDir, componentName, arg1, path);
     return {
 
         // 输出目录
         distDir,
-
-        // 输出的组件名
-        componentName,
 
         // 远程地址
         url: arg1,
@@ -83,7 +71,8 @@ const main = async () => {
         return console.log(red(`当前node版本${process.version}太低，请升级10.x及以上`));
     }
     const config: Conf = await interactive();
-    create(config);
+    await create(config);
+    console.log(green(`! 完成`))
 };
 
 main();

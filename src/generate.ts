@@ -6,60 +6,165 @@
 
 import {writeFileSync} from 'fs';
 import {Icon} from './interface';
+import {join} from 'path';
 
-const cssBase = (prefix: string) => {
-    return `
-        .${prefix}font {
-            display: flex;
-            background-repeat: no-repeat;
-            background-size: contain;
-            background-position: center center;
+const jsonBase = `{
+    "component": true
+}
+`;
+
+const cssBase = `.iconfont {
+    display: flex; /* inline-block vertical 对不齐*/
+    width: 36.232rpx;
+    height: 36.232rpx;
+    background-repeat: no-repeat;
+    background-position: center center;
+    background-size: contain;
+    opacity: 0;
+    transition: opacity 90ms linear;
+}
+
+.iconfont.show {
+    opacity: 1;
+}
+`;
+
+const templateBase = (icons: Icon[]): string => {
+    let template = '';
+    for (const [idx, icon] of Array.from(icons.entries())) {
+        const {name, raw} = icon;
+        const el =
+                  `<view ${idx === 0 ? 's-if' : 's-elif'}="name === ${name}"\n`
+                + `    class="iconfont icon-${name} gov-icon"\n`
+                + `    style="\n`
+                + `        width={{size}};\n`
+                + `        height={{size}};\n`
+                + `        background-image=${raw};\n`
+                + '    "\n'
+                + '></view>\n\n'
+        ;
+        template += el;
+    }
+    return template;
+};
+
+const jsBase = `/**
+ * @file index.js
+ * @author afcfzf <9301462@qq.com>
+ * @date 2020-01-01
+ */
+
+Component({ // eslint-disable-line
+    extrnalClasses: ['gov-icon'],
+
+    properties: {
+        name: {
+            type: String,
+            value: ''
+        },
+
+        size: {
+            type: String,
+            value: '36.232rpx'
+        },
+
+        color: {
+            type: [Array, String],
+            // 初始transpatent避免抖动
+            value: 'transparent',
+            observer(n) {
+                let fixedColor = n;
+                const trans = hexColor => {
+                    if (hexColor && hexColor.charAt(0) === '#') {
+                        return '%23' + hexColor.slice(1);
+                    }
+                    return hexColor;
+                };
+                if (typeof n === 'string') {
+                    fixedColor = trans(n);
+                }
+                else {
+                    fixedColor = [];
+                    for (const i of n) {
+                        fixedColor.push(trans(i));
+                    }
+                }
+                this.setData({
+                    singleColor: typeof n === 'string',
+                    fixedColor
+                });
+            }
+        },
+
+        quot: {
+            type: String,
+            value: '"'
         }
-        \n
-    `;
-};
+    },
 
-const elBase = (icon: Icon): string => {
-    const {name, raw} = icon;
-    return `
-        <view s-if="name === ${name}"
-            class="iconfont icon-${name}"
-            style="
-                width={{size}};
-                height={{size}};
-                background-image url(${raw});
-            "
-        ></view>
-        \n
-    `;
-};
+    data: {
+        singleColor: true,
+        inited: false,
+        fixedColor: 'transparent'
+    },
+
+    attached() {
+        // 防止抖动
+        this.setData({inited: true});
+    }
+});
+`;
 
 export default class Generate {
-    context: string;
+    icons: Icon[];
+    path: string;
 
-    constructor(text: string) {
-        this.context = text;
+    constructor(icons: Icon[], path: string) {
+        this.icons = icons;
+        this.path = path;
     }
 
-    generateTemplate(path: string) {
+    generateTemplate() {
         try {
-            writeFileSync(path + 'index.swan', elBase);
+            const template = templateBase(this.icons);
+            writeFileSync(join(this.path, 'index.swan'), template);
         }
         catch (err) {
             throw new Error('创建template失败: ' + err);
         }
     }
 
-    generateCss(path: string) {
+    generateCss() {
         try {
-            writeFileSync(path + 'index.css', cssBase);
+            writeFileSync(join(this.path, '/index.css'), cssBase);
         }
         catch (err) {
             throw new Error('创建css失败: ' + err);
         }
     }
 
-    generateComponent(path: string) {
+    generateJs() {
+        try {
+            writeFileSync(join(this.path, '/index.js'), jsBase);
+        }
+        catch (err) {
+            throw new Error('创建js失败: ' + err);
+        }
+    }
 
+    generateJson() {
+        try {
+            writeFileSync(join(this.path, '/index.json'), jsonBase);
+        }
+        catch (err) {
+            throw new Error('创建json失败: ' + err);
+        }
+    }
+
+    generateComponent() {
+        this.generateJson();
+        this.generateJs();
+        this.generateCss();
+        this.generateTemplate();
     }
 };
