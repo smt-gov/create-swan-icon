@@ -35,11 +35,11 @@ const templateBase = (icons: Icon[]): string => {
         const {name, raw} = icon;
         const el =
                   `<view ${idx === 0 ? 's-if' : 's-elif'}="name === '${name}'"\n`
-                + `    class="iconfont icon-${name} gov-icon"\n`
+                + `    class="iconfont icon-${name} gov-icon {{inited ? 'show': ''}}"\n`
                 + `    style="\n`
-                + `        width={{size}};\n`
-                + `        height={{size}};\n`
-                + `        background-image=${raw};\n`
+                + `        width: {{size}};\n`
+                + `        height: {{size}};\n`
+                + `        background-image: ${raw};\n`
                 + '    "\n'
                 + '></view>\n\n'
         ;
@@ -71,7 +71,7 @@ Component({ // eslint-disable-line
         color: {
             type: [Array, String],
             // 初始transpatent避免抖动
-            value: 'transparent',
+            value: '',
             observer(n) {
                 let fixedColor = n;
                 const trans = hexColor => {
@@ -105,7 +105,7 @@ Component({ // eslint-disable-line
     data: {
         singleColor: true,
         inited: false,
-        fixedColor: 'transparent'
+        fixedColor: ''
     },
 
     attached() {
@@ -161,10 +161,20 @@ export default class Generate {
         }
     }
 
+    generateList() {
+        try {
+            writeFileSync(join(this.path, '/list.md'), '[' + this.icons.map(({name}) => `\n    '${name}'`) + '\n]');
+        }
+        catch (err) {
+            throw new Error('创建json失败: ' + err);
+        }
+    }
+
     generateComponent() {
         this.generateJson();
         this.generateJs();
         this.generateCss();
+        this.generateList();
         this.generateTemplate();
     }
 };

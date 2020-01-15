@@ -9,7 +9,8 @@ import {Icon} from './interface';
 const reSvg = /(<svg(.|\s)*?<\/svg>)/gim;
 const reIcon = /(<symbol(.|\s)*?<\/symbol>)/gim;
 const reTag = /(<\/?)symbol/gim;
-const reColor = /fill='.*?'/gim;
+const reColor = /fill='(#)?(.*?)'/gim;
+const reSymbolProps = /<symbol((.|\s)*?)>/gim;
 
 /**
  * 匹配svg 提取内容
@@ -24,13 +25,20 @@ export default class Match {
     }
 
     formatIcon(raw: string): string {
-        const result = raw
+        let result = raw;
+        // 阿里图标库可能丢失xmlns
+        const propNs = 'xmlns="http://www.w3.org/2000/svg"';
+        if (!raw.includes('xmlns')) {
+            result = raw.replace(reSymbolProps, `<symbol $1 ${propNs}>`);
+        }
+
+        result = result
             .replace(reTag, '$1svg')
             .replace(/"/g, '\'')
             .replace(reColor, (
                 () => {
                     let i = 0;
-                    return () => `fill='{{(singleColor ? fixedColor : fixedColor[${i++}]) || '%23000000'}}'`
+                    return (m, $1, $2) => `fill='{{(singleColor ? fixedColor : fixedColor[${i++}]) || '${$1 === '#' ? '%23' + $2 : $2}'}}'`
                 })()
             );
 
