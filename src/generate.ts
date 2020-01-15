@@ -34,7 +34,7 @@ const templateBase = (icons: Icon[]): string => {
     for (const [idx, icon] of Array.from(icons.entries())) {
         const {name, raw} = icon;
         const el =
-                  `<view ${idx === 0 ? 's-if' : 's-elif'}="name === ${name}"\n`
+                  `<view ${idx === 0 ? 's-if' : 's-elif'}="name === '${name}'"\n`
                 + `    class="iconfont icon-${name} gov-icon"\n`
                 + `    style="\n`
                 + `        width={{size}};\n`

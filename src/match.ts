@@ -41,7 +41,7 @@ export default class Match {
         const icons: string[] = this.content.match(reIcon) || [];
         for (const icon of icons) {
             // 取出名字
-            const reName = new RegExp(`id="icon-(\\w+)"`);
+            const reName = new RegExp(`id="icon-([\\w-]+)"`);
             const ids: string[] | null = icon.match(reName);
             const name = (ids && ids[1] || '');
             const raw = this.formatIcon(icon);
