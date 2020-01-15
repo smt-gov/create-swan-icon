@@ -71,7 +71,6 @@ Component({ // eslint-disable-line
 
         color: {
             type: [Array, String],
-            // 初始transpatent避免抖动
             value: '',
             observer(n) {
                 let fixedColor = n;
