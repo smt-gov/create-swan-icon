@@ -1,3 +1,5 @@
+#!/usr/bin/env node
+
 /**
  * @file cli.ts
  * @author afcfzf (9301462@baidu.com)

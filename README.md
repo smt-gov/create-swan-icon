@@ -12,6 +12,7 @@
 npm i create-swan-icon -g
 create-swan-icon //at.alicdn.com/t/font_1516258_fb34c0gptjc.js
 ```
+
 ## icon链接注意事项
 1. sketch生成的svg一定要用ai转一遍，建议版本 Generator: Adobe Illustrator 23.0.1, SVG Export Plug-In . SVG Version: 6.00 Build 0
 2. 不能有渐变
